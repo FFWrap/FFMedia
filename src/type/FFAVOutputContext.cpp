@@ -244,7 +244,7 @@ namespace ff {
         avCodecContext->bit_rate = avDecodeCodecParameters->bit_rate;
         avCodecContext->time_base = avDecodeStream->time_base;
 
-        avCodecContext->thread_count = std::thread::hardware_concurrency();
+        avCodecContext->thread_count = 0;
 
         if (formatContextImpl->getRaw()->oformat->flags & AVFMT_GLOBALHEADER) {
             avCodecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;

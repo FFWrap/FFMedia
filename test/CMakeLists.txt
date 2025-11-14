@@ -24,3 +24,15 @@ target_include_directories(${FFMPEGPP_TEST} PRIVATE ${FFMPEGPP_INCLUDE_DIR})
 
 install(TARGETS ${FFMPEGPP_TEST}
         DESTINATION ${FFMPEGPP_INSTALL_DIR}/test)
+if (WIN32)
+    install(
+        DIRECTORY
+            $<TARGET_FILE_DIR:${FFMPEGPP_TEST}>/
+        DESTINATION
+            ${FFMPEGPP_INSTALL_DIR}/test
+        CONFIGURATIONS
+            Debug Release RelWithDebInfo MinSizeRel
+        FILES_MATCHING
+            PATTERN "*.dll"
+    )
+endif()
