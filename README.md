@@ -10,7 +10,7 @@ Tested with **FFmpeg 7.1.2**
 
 `ffmpegpp` is a lightweight and clean C++ wrapper built on top of the FFmpeg C API.
 
-* Written in **C++17+**
+* Written in **C++17**
 * Simplifies FFmpeg usage with a safe and clear API
 * Current encoding support:
 
@@ -88,5 +88,5 @@ cmake --install . --config Release
 `ffmpegpp` has been tested with:
 
 * **FFmpeg 7.1.2**
-* Linux (Ubuntu, Arch)
+* Linux (Ubuntu)
 * Windows 10/11 (MSVC)
