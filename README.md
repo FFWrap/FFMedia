@@ -1,6 +1,6 @@
 ﻿# ffmpegpp
 
-A modern **C++ wrapper** for the **FFmpeg C API**
+**C++ wrapper** for the **FFmpeg C API**
 Supports **Linux** and **Windows**
 Tested with **FFmpeg 7.1.2**
 
@@ -10,7 +10,6 @@ Tested with **FFmpeg 7.1.2**
 
 `ffmpegpp` is a lightweight and clean C++ wrapper built on top of the FFmpeg C API.
 
-* Written in **C++17**
 * Simplifies FFmpeg usage with a safe and clear API
 * Current encoding support:
 
