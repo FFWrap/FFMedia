@@ -1,6 +1,5 @@
 set(SOURCES
-        utils.cpp
-        createDecodeContext.cpp
+        FFThreadPool.cpp
 )
 
 set(UPDATED_SOURCES "") 
@@ -9,5 +8,3 @@ foreach(SOURCE IN LISTS SOURCES)
 endforeach()
 
 target_sources(${PROJECT_NAME} PRIVATE ${UPDATED_SOURCES})
-
-add_subdirectory(thread)
