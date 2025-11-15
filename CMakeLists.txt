@@ -22,9 +22,18 @@ set(FFMPEGPP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(${PROJECT_NAME})
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SRT REQUIRED srt)
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRT_INCLUDE_DIRS})
+target_link_directories(${PROJECT_NAME} PRIVATE ${SRT_LIBRARY_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SRT_LIBRARIES})
+target_compile_options(${PROJECT_NAME} PRIVATE ${SRT_CFLAGS_OTHER})
+
+find_package(Drogon CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
+
 find_package(FFMPEG REQUIRED)
-target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEGPP_INCLUDE_DIR}
-										            ${FFMPEG_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEGPP_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS})
 target_link_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${FFMPEG_LIBRARIES})
 

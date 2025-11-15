@@ -20,6 +20,8 @@
         "x265"
       ]
      },
-    "gtest"
+    "gtest",
+    "drogon",
+    "libsrt"
   ]
 }
