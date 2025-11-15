@@ -4,10 +4,6 @@ project(ffmpegpp)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# superess
-option(FFMPEGPP_SUPPRESS "Usage Suppress" OFF)
-option(FFMPEGPP_TEST "Library Test" OFF)
-
 if (WIN32 AND MSVC)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 elseif (LINUX)
