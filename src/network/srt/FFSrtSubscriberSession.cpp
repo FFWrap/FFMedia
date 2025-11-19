@@ -2,19 +2,24 @@
 #include "network/srt/FFSrtStreamChannel.hpp"
 
 namespace ff {
-	FFSrtSubscriberSession::FFSrtSubscriberSession(SRTSOCKET srtSocket, std::string& streamId, std::shared_ptr<FFSrtStreamChannel> srtStreamChannel)
+	FFSrtSubscriberSession::FFSrtSubscriberSession(SRTSOCKET srtSocket, FFSrtStreamChannelPtr srtStreamChannel)
 	: FFSrtSocketBase(srtSocket)
-	, streamId(streamId)
 	, srtStreamChannel(srtStreamChannel) 
 	{
-
+		this->streamId = srtStreamChannel->getStreamId();
 	}
 
 	FFSrtSubscriberSession::~FFSrtSubscriberSession() {
 
 	}
 
-	void FFSrtSubscriberSession::enqueuePacket(std::vector<char>& srtStream) {
+	FFSrtSubscriberSessionPtr FFSrtSubscriberSession::create(SRTSOCKET srtSocket, FFSrtStreamChannelPtr srtStreamChannel) {
+		FFSrtSubscriberSessionPtr session = std::make_shared<FFSrtSubscriberSession>(srtSocket, srtStreamChannel);
+
+		return session;
+	}
+
+	void FFSrtSubscriberSession::enqueuePacket(FFSrtStreamPtr srtStream) {
 
 	}
 

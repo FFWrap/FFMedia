@@ -5,12 +5,19 @@
 #include <memory>
 
 namespace ff {
+	class FFSrtPublisherSession;
+	using FFSrtPublisherSessionPtr = std::shared_ptr<FFSrtPublisherSession>;
 	class FFSrtStreamChannel;
+	using FFSrtStreamChannelPtr = std::shared_ptr< FFSrtStreamChannel>;
+
 
 	class FFSrtPublisherSession : public FFSrtSocketBase, std::enable_shared_from_this<FFSrtPublisherSession> {
 	public:
-		explicit FFSrtPublisherSession(SRTSOCKET srtSocket, std::string& streamId, std::shared_ptr<FFSrtStreamChannel> srtStreamChannel);
+		explicit FFSrtPublisherSession(SRTSOCKET srtSocket, FFSrtStreamChannelPtr srtStreamChannel);
 		virtual ~FFSrtPublisherSession();
+
+	public:
+		static FFSrtPublisherSessionPtr create(SRTSOCKET srtSocket, FFSrtStreamChannelPtr srtStreamChannel);
 
 	protected:
 		virtual void onStart() override;

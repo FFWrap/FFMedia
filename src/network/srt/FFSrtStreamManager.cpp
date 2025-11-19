@@ -9,12 +9,23 @@ namespace ff {
 
 	}
 
-	std::shared_ptr<FFSrtStreamChannel> FFSrtStreamManager::getOrCreate(const std::string& streamId) {
+	FFSrtStreamChannelPtr FFSrtStreamManager::getOrCreate(const std::string& streamId) {
+		std::lock_guard lockGuard(this->mutex);
 
-		return nullptr;
+		FFSrtStreamChannelPtr returnStreamChannel;
+
+		auto iter = this->channels.find(streamId);
+		if (iter != this->channels.end()) {
+			returnStreamChannel = iter->second;
+		} else {
+			returnStreamChannel = FFSrtStreamChannel::create();
+			this->channels.emplace(streamId, returnStreamChannel);
+		}
+
+		return returnStreamChannel;
 	}
 
-	std::shared_ptr<FFSrtStreamChannel> FFSrtStreamManager::find(const std::string& streamId) {
+	FFSrtStreamChannelPtr FFSrtStreamManager::find(const std::string& streamId) {
 
 		return nullptr;
 	}

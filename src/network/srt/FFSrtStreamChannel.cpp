@@ -10,7 +10,13 @@ namespace ff {
 
 	}
 
-	void FFSrtStreamChannel::pushPacket(std::vector<char> buffer) {
+	FFSrtStreamChannelPtr FFSrtStreamChannel::create() {
+		FFSrtStreamChannelPtr channel = std::make_shared<FFSrtStreamChannel>();
+
+		return channel;
+	}
+
+	void FFSrtStreamChannel::pushPacket(FFSrtStreamPtr buffer) {
 
 	}
 

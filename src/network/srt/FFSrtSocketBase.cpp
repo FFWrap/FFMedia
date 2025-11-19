@@ -27,6 +27,7 @@ namespace ff {
 		}
 
 		this->thread->request_stop();
+		this->thread->join();
 		this->thread = nullptr;
 	}
 

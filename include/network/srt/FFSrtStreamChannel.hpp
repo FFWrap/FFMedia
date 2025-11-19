@@ -1,11 +1,16 @@
 #pragma once
 
+#include "network/srt/FFSrtStream.hpp"
+
 #include <memory>
 #include <vector>
 #include <set>
 #include <string>
 
 namespace ff {
+	class FFSrtStreamChannel;
+	using FFSrtStreamChannelPtr = std::shared_ptr<FFSrtStreamChannel>;
+
 	class FFSrtSubscriberSession;
 	class FFSrtPublisherSession;
 
@@ -15,7 +20,10 @@ namespace ff {
 		virtual ~FFSrtStreamChannel();
 
 	public:
-		void pushPacket(std::vector<char> buffer);
+		static FFSrtStreamChannelPtr create();
+
+	public:
+		void pushPacket(FFSrtStreamPtr buffer);
 		
 		void attachPublisher(std::shared_ptr<FFSrtPublisherSession> session);
 		void detachPublisher(std::shared_ptr<FFSrtPublisherSession> session);
@@ -25,6 +33,8 @@ namespace ff {
 
 		void start();
 		void stop();
+
+		std::string getStreamId() { return this->streamId; }
 
 	private:
 		void startBoradcastLoop();

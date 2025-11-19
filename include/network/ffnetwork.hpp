@@ -1,4 +1,4 @@
 #pragma once
 
-#include "network/srt/FFSrtClient.hpp"
-#include "network/srt/FFSrtServer.hpp"
+#include "network/srt/FFSrtCommon.hpp"
+#include "network/srt/FFSrtRelayServer.hpp"

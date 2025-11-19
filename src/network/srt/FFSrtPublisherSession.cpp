@@ -2,16 +2,21 @@
 #include "network/srt/FFSrtStreamChannel.hpp"
 
 namespace ff {
-	FFSrtPublisherSession::FFSrtPublisherSession(SRTSOCKET srtSocket, std::string& streamId, std::shared_ptr<FFSrtStreamChannel> srtStreamChannel)
+	FFSrtPublisherSession::FFSrtPublisherSession(SRTSOCKET srtSocket, FFSrtStreamChannelPtr srtStreamChannel)
 	: FFSrtSocketBase(srtSocket)
-	, streamId(streamId)
 	, srtStreamChannel(srtStreamChannel)
 	{
-
+		this->streamId = srtStreamChannel->getStreamId();
 	}
 
 	FFSrtPublisherSession::~FFSrtPublisherSession() {
 
+	}
+
+	FFSrtPublisherSessionPtr FFSrtPublisherSession::create(SRTSOCKET srtSocket, FFSrtStreamChannelPtr srtStreamChannel) {
+		FFSrtPublisherSessionPtr session = std::make_shared<FFSrtPublisherSession>(srtSocket, srtStreamChannel);
+		
+		return session;
 	}
 
 	void FFSrtPublisherSession::onStart() {

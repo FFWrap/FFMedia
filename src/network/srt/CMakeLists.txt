@@ -1,9 +1,14 @@
 set(SOURCES
+        FFSrtStream.cpp
         FFSrtSocketBase.cpp
         FFSrtPublisherSession.cpp
         FFSrtSubscriberSession.cpp
         FFSrtStreamChannel.cpp
         FFSrtStreamManager.cpp
+        FFSrtAcceptorBase.cpp
+        FFSrtPublisherAcceptor.cpp
+        FFSrtSubscriberAcceptor.cpp
+        FFSrtRelayServer.cpp
 )
 
 set(UPDATED_SOURCES "") 

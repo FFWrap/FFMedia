@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <string>
+#include <mutex>
+#include <unordered_map>
 
 namespace ff {
 	class FFSrtStreamManager {
@@ -12,9 +14,16 @@ namespace ff {
 		virtual ~FFSrtStreamManager();
 
 	public:
-		std::shared_ptr<FFSrtStreamChannel> getOrCreate(const std::string& streamId);
-		std::shared_ptr<FFSrtStreamChannel> find(const std::string& streamId);
+
+	public:
+		FFSrtStreamChannelPtr getOrCreate(const std::string& streamId);
+		FFSrtStreamChannelPtr find(const std::string& streamId);
+
 		void removeIfEmpty(const std::string& streamId);
 		void remove(const std::string& streamId);
+
+	private:
+		std::mutex mutex;
+		std::unordered_map<std::string, FFSrtStreamChannelPtr> channels;
 	};
 };
