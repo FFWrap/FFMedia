@@ -1,40 +1,21 @@
 #include "network/srt/FFSrtStreamManager.hpp"
+#include "network/srt/FFSrtStreamChannel.hpp"
 
 namespace ff {
-	FFSrtStreamManager::FFSrtStreamManager() {
+    FFSrtStreamManager& FFSrtStreamManager::instance() {
+        static FFSrtStreamManager inst;
+        return inst;
+    }
 
-	}
-
-	FFSrtStreamManager::~FFSrtStreamManager() {
-
-	}
-
-	FFSrtStreamChannelPtr FFSrtStreamManager::getOrCreate(const std::string& streamId) {
-		std::lock_guard lockGuard(this->mutex);
-
-		FFSrtStreamChannelPtr returnStreamChannel;
-
-		auto iter = this->channels.find(streamId);
-		if (iter != this->channels.end()) {
-			returnStreamChannel = iter->second;
-		} else {
-			returnStreamChannel = FFSrtStreamChannel::create();
-			this->channels.emplace(streamId, returnStreamChannel);
-		}
-
-		return returnStreamChannel;
-	}
-
-	FFSrtStreamChannelPtr FFSrtStreamManager::find(const std::string& streamId) {
-
-		return nullptr;
-	}
-
-	void FFSrtStreamManager::removeIfEmpty(const std::string& streamId) {
-
-	}
-
-	void FFSrtStreamManager::remove(const std::string& streamId) {
-
-	}
+    std::shared_ptr<FFSrtStreamChannel> FFSrtStreamManager::getOrCreate(const std::string& id) {
+        std::lock_guard<std::mutex> lock(mapMtx);
+        auto it = channels.find(id);
+        if (it != channels.end()) {
+            return it->second;
+        }
+        auto newChannel = std::make_shared<FFSrtStreamChannel>(id);
+        channels[id] = newChannel;
+        std::cout << "[Manager] New Channel Created: " << id << std::endl;
+        return newChannel;
+    }
 }

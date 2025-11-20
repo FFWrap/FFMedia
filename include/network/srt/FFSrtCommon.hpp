@@ -1,34 +1,36 @@
 #pragma once
 
+#include <vector>
+#include <string>
+#include <memory>
+#include <chrono>
+#include <iostream>
+
 extern "C" {
-#include "srt/srt.h"
+#include <srt/srt.h>
 }
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#pragma comment(lib, "ws2_32.lib")
-#else
-#include <arpa/inet.h>
-#include <unistd.h>
-#endif
-
-
 namespace ff {
-	static void FFSrtInitialize() {
-#ifdef _WIN32
-		WSADATA wsa;
-		WSAStartup(MAKEWORD(2, 2), &wsa);
-#endif
-		
-		srt_startup();
-	}
+    // ---------------------------------------------------------------------------
+    // 패킷 정의 (Zero-Copy)
+    // ---------------------------------------------------------------------------
+    struct FFSrtPacket {
+        std::vector<char> data;
+        uint64_t timestamp;
 
-	static void FFSrtFinalize() {
-		srt_cleanup();
+        FFSrtPacket(const char* buf, int size) : data(buf, buf + size) {
+            timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+        }
+    };
 
-#ifdef _WIN32
-		WSACleanup();
-#endif
-	}
+    using PacketPtr = std::shared_ptr<FFSrtPacket>;
+
+    // ---------------------------------------------------------------------------
+    // 세션 타입 정의
+    // ---------------------------------------------------------------------------
+    enum class SessionType {
+        PUBLISHER,
+        SUBSCRIBER
+    };
 }

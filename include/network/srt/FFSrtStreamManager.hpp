@@ -1,29 +1,22 @@
 #pragma once
 
-#include "network/srt/FFSrtStreamChannel.hpp"
+#include "network/srt/FFSrtCommon.hpp"
 
-#include <memory>
-#include <string>
-#include <mutex>
 #include <unordered_map>
+#include <mutex>
 
 namespace ff {
-	class FFSrtStreamManager {
-	public:
-		explicit FFSrtStreamManager();
-		virtual ~FFSrtStreamManager();
+    class FFSrtStreamChannel;
 
-	public:
+    class FFSrtStreamManager {
+    public:
+        static FFSrtStreamManager& instance();
 
-	public:
-		FFSrtStreamChannelPtr getOrCreate(const std::string& streamId);
-		FFSrtStreamChannelPtr find(const std::string& streamId);
+        std::shared_ptr<FFSrtStreamChannel> getOrCreate(const std::string& id);
 
-		void removeIfEmpty(const std::string& streamId);
-		void remove(const std::string& streamId);
-
-	private:
-		std::mutex mutex;
-		std::unordered_map<std::string, FFSrtStreamChannelPtr> channels;
-	};
-};
+    private:
+        FFSrtStreamManager() = default;
+        std::mutex mapMtx;
+        std::unordered_map<std::string, std::shared_ptr<FFSrtStreamChannel>> channels;
+    };
+}

@@ -1,13 +1,8 @@
 set(SOURCES
-        FFSrtStream.cpp
-        FFSrtSocketBase.cpp
-        FFSrtPublisherSession.cpp
-        FFSrtSubscriberSession.cpp
+        FFSrtSession.cpp
         FFSrtStreamChannel.cpp
         FFSrtStreamManager.cpp
-        FFSrtAcceptorBase.cpp
-        FFSrtPublisherAcceptor.cpp
-        FFSrtSubscriberAcceptor.cpp
+        FFSrtIOWorker.cpp
         FFSrtRelayServer.cpp
 )
 

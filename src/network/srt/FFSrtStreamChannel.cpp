@@ -1,50 +1,32 @@
 #include "network/srt/FFSrtStreamChannel.hpp"
-
+#include "network/srt/FFSrtSession.hpp"
 
 namespace ff {
-	FFSrtStreamChannel::FFSrtStreamChannel() {
+    FFSrtStreamChannel::FFSrtStreamChannel(std::string id) : streamId(id) {}
 
-	}
+    FFSrtStreamChannel::~FFSrtStreamChannel() {
+        std::cout << "[Channel] Destroyed: " << streamId << std::endl;
+    }
 
-	FFSrtStreamChannel::~FFSrtStreamChannel() {
+    void FFSrtStreamChannel::addSubscriber(std::shared_ptr<FFSrtSession> sub) {
+        std::lock_guard<std::mutex> lock(subscribersMtx);
+        subscribers.insert(sub);
+    }
 
-	}
+    void FFSrtStreamChannel::removeSubscriber(std::shared_ptr<FFSrtSession> sub) {
+        std::lock_guard<std::mutex> lock(subscribersMtx);
+        subscribers.erase(sub);
+    }
 
-	FFSrtStreamChannelPtr FFSrtStreamChannel::create() {
-		FFSrtStreamChannelPtr channel = std::make_shared<FFSrtStreamChannel>();
+    void FFSrtStreamChannel::broadcast(PacketPtr packet) {
+        std::lock_guard<std::mutex> lock(subscribersMtx);
+        for (auto& sub : subscribers) {
+            sub->enqueuePacket(packet);
+        }
+    }
 
-		return channel;
-	}
-
-	void FFSrtStreamChannel::pushPacket(FFSrtStreamPtr buffer) {
-
-	}
-
-	void FFSrtStreamChannel::attachPublisher(std::shared_ptr<FFSrtPublisherSession> session) {
-		
-	}
-
-	void FFSrtStreamChannel::detachPublisher(std::shared_ptr<FFSrtPublisherSession> session) {
-
-	}
-
-	void FFSrtStreamChannel::attachSubscriber(std::shared_ptr<FFSrtSubscriberSession> session) {
-
-	}
-
-	void FFSrtStreamChannel::detachSubscriber(std::shared_ptr<FFSrtSubscriberSession> session) {
-
-	}
-
-	void FFSrtStreamChannel::start() {
-
-	}
-
-	void FFSrtStreamChannel::stop() {
-
-	}
-
-	void FFSrtStreamChannel::startBoradcastLoop() {
-
-	}
-};
+    size_t FFSrtStreamChannel::getSubscriberCount() {
+        std::lock_guard<std::mutex> lock(subscribersMtx);
+        return subscribers.size();
+    }
+}

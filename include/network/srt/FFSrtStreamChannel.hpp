@@ -1,47 +1,26 @@
 #pragma once
 
-#include "network/srt/FFSrtStream.hpp"
+#include "network/srt/FFSrtCommon.hpp"
 
-#include <memory>
-#include <vector>
-#include <set>
-#include <string>
+#include <unordered_set>
+#include <mutex>
 
 namespace ff {
-	class FFSrtStreamChannel;
-	using FFSrtStreamChannelPtr = std::shared_ptr<FFSrtStreamChannel>;
+    class FFSrtSession; // 전방 선언
 
-	class FFSrtSubscriberSession;
-	class FFSrtPublisherSession;
+    class FFSrtStreamChannel {
+    private:
+        std::string streamId;
+        std::mutex subscribersMtx;
+        std::unordered_set<std::shared_ptr<FFSrtSession>> subscribers;
 
-	class FFSrtStreamChannel : public std::enable_shared_from_this<FFSrtStreamChannel> {
-	public:
-		explicit FFSrtStreamChannel();
-		virtual ~FFSrtStreamChannel();
+    public:
+        FFSrtStreamChannel(std::string id);
+        ~FFSrtStreamChannel();
 
-	public:
-		static FFSrtStreamChannelPtr create();
-
-	public:
-		void pushPacket(FFSrtStreamPtr buffer);
-		
-		void attachPublisher(std::shared_ptr<FFSrtPublisherSession> session);
-		void detachPublisher(std::shared_ptr<FFSrtPublisherSession> session);
-
-		void attachSubscriber(std::shared_ptr<FFSrtSubscriberSession> session);
-		void detachSubscriber(std::shared_ptr<FFSrtSubscriberSession> session);
-
-		void start();
-		void stop();
-
-		std::string getStreamId() { return this->streamId; }
-
-	private:
-		void startBoradcastLoop();
-
-	private:
-		std::string streamId;
-		std::weak_ptr<FFSrtPublisherSession> publisherSession;
-		std::set<std::weak_ptr<FFSrtSubscriberSession>> subscriberSessions;
-	};
-};
+        void addSubscriber(std::shared_ptr<FFSrtSession> sub);
+        void removeSubscriber(std::shared_ptr<FFSrtSession> sub);
+        void broadcast(PacketPtr packet);
+        size_t getSubscriberCount();
+    };
+}

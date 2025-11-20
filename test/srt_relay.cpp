@@ -6,15 +6,10 @@
 
 
 TEST(SRT, RELAY_SERVER) {
-	ff::FFSrtInitialize();
+    int port = 9000;
 
-	ff::FFSrtRelayServer relayServer;
-	relayServer.start();
-
-	std::cout << "Wait close input..." << std::endl;
-	int a;
-	std::cin >> a;
-
-	relayServer.stop();
-	ff::FFSrtFinalize();
+    ff::FFSrtRelayServer server;
+    if (!server.start(port)) {
+        std::cerr << "Failed to start server." << std::endl;
+    }
 }
