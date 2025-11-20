@@ -19,8 +19,13 @@ namespace ff {
     }
 
     void FFSrtStreamChannel::broadcast(PacketPtr packet) {
-        std::lock_guard<std::mutex> lock(subscribersMtx);
-        for (auto& sub : subscribers) {
+        std::vector<std::shared_ptr<FFSrtSession>> targets;
+        {
+            std::lock_guard<std::mutex> lock(subscribersMtx);
+            targets.reserve(subscribers.size());
+            targets.insert(targets.end(), subscribers.begin(), subscribers.end());
+        }
+        for (const auto& sub : targets) {
             sub->enqueuePacket(packet);
         }
     }
