@@ -39,7 +39,7 @@ Install FFmpeg (with common codecs) and GoogleTest (optional for testing):
 ```bash
 vcpkg install \
   ffmpeg[fdk-aac,fontconfig,freetype,fribidi,gpl,mp3lame,nvcodec,vorbis,vpx,webp,x264,x265] \
-  gtest
+  gtest libsrt libdatachannel
 ```
 
 ---
@@ -87,5 +87,5 @@ cmake --install . --config Release
 `ffmpegpp` has been tested with:
 
 * **FFmpeg 7.1.2**
-* Linux (Ubuntu)
+* Linux (Ubuntu) tested
 * Windows 10/11 (MSVC)
