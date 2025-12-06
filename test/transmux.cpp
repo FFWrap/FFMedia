@@ -1,4 +1,4 @@
-#include "ffmpegpp.hpp"
+#include "FFMedia.hpp"
 #include "gtest/gtest.h"
 
 TEST(TRANSMUX, TRANSMUX) {

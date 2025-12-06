@@ -33,8 +33,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${FFMEDIA_INCLUDE_DIR} ${FFMPE
 target_link_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${FFMPEG_LIBRARIES})
 
-add_subdirectory (src) 
-add_subdirectory (test)
+add_subdirectory(src) 
+add_subdirectory(test)
+add_subdirectory(example)
 
 install(TARGETS ${PROJECT_NAME}
         DESTINATION ${FFMEDIA_INSTALL_DIR}/lib)

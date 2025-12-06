@@ -58,6 +58,18 @@ namespace ff {
         return this->errorAVMessage;
     }
 
+    std::string AVError::getAllErrorMessage() const {
+        std::string allErrorMessage = this->errorMessage;
+        if (this->errorAVCode != 0) {
+            allErrorMessage += " | AVError Code: " + std::to_string(this->errorAVCode);
+            allErrorMessage += " | AVError Message: " + this->errorAVMessage;
+            if (!this->errorAVFunction.empty()) {
+                allErrorMessage += " | AVError Function: " + this->errorAVFunction;
+            }
+        }
+        return allErrorMessage;
+	}
+
     std::string AVError::getAVErrorMessage(int errorAVCode) {
         char avErrorMessage[AV_ERROR_MAX_STRING_SIZE] = {
             0,

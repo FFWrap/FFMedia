@@ -1,4 +1,4 @@
-#include "ffmpegpp.hpp"
+#include "FFMedia.hpp"
 #include "gtest/gtest.h"
 
 TEST(READ_TEST, AV_PACKET_READ_ITERATOR) {

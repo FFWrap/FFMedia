@@ -27,6 +27,7 @@ namespace ff {
         int getAVCode() const;
         std::string getAVFunction() const;
         std::string getAVErrorMessage() const;
+        std::string getAllErrorMessage() const;
 
     private:
         std::string getAVErrorMessage(int errorAVCode);
