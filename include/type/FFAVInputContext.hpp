@@ -10,6 +10,7 @@
 #include "type/FFAVDecodeStream.hpp"
 #include "type/FFAVPacket.hpp"
 #include "type/FFAVStream.hpp"
+#include "type/FFAVCodecContextHWFormat.hpp"
 
 namespace ff {
     class FFAVInputContextIterator;
@@ -23,7 +24,7 @@ namespace ff {
         FFAVFormatContextImplPtr getImpl();
 
     public:
-        AVError open(const std::string& url, bool cudaDecode = false);
+        AVError open(const std::string& url, FFAVCodecContextHWFormatPtr hwFormat = nullptr);
         bool isOpened();
         void close();
 
@@ -38,7 +39,7 @@ namespace ff {
         FFAVInputContextIterator end();
 
     private:
-        AVError parseStreamInfo(bool cudaDecode);
+        AVError parseStreamInfo(FFAVCodecContextHWFormatPtr hwFormat);
 
     private:
         FFAVFormatContextImplPtr formatContextImpl;

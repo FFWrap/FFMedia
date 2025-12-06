@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
+
 #include <vector>
 
 #include "type/FFAVFrame.hpp"
 #include "type/FFAVPacket.hpp"
 #include "type/FFAVStream.hpp"
 #include "type/FFAVSwsContext.hpp"
+#include "type/FFAVCodecContextHWFormat.hpp"
 
 namespace ff {
     class FFAVDecodeStream;
