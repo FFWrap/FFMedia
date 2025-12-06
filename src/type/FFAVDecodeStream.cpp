@@ -1,6 +1,7 @@
 #include "type/FFAVDecodeStream.hpp"
 
 #include "error/ffav.hpp"
+#include "type/FFAVCodecContextFactory.hpp"
 #include "type/FFAVFrame.hpp"
 #include "type/impl/FFAVCodecContextImpl.hpp"
 #include "type/impl/FFAVFrameImpl.hpp"
@@ -48,7 +49,8 @@ namespace ff {
                 break;
             }
 
-            if (FFAVStream::codecContext->isCudaFormat()) {
+            if (FFAVStream::codecContext->isHWCodec() 
+                && FFAVStream::getType() == DATA_TYPE::VIDEO) {
                 FFAVFrame convertFrame;
                 AVError cudaConvertError = this->cudaFormatConvert(frame, &convertFrame);
                 if (cudaConvertError.getType() != AV_ERROR_TYPE::SUCCESS) {
@@ -77,7 +79,7 @@ namespace ff {
         AVFrame* src = srcFrame.getImpl()->getRaw().get();
         AVFrame* dst = dstFrame->getImpl()->getRaw().get();
 
-        if (src->format != FFAVStream::codecContext->getCudaFormat()) {
+        if (src->format != FFAVStream::codecContext->getPixFmt()) {
             return AVError(
                 AV_ERROR_TYPE::AV_ERROR, "srcFrame format is not cuda hw format", -1, "FFAVDecoder::cudaFormatConvert");
         }

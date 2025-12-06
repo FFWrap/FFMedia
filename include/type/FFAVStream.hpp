@@ -1,11 +1,13 @@
 #pragma once
 
 #include <memory>
+
 #include <vector>
 
+#include "type/impl/ffavimpl.hpp"
+#include "type/FFAVCodecParameters.hpp"
 #include "type/FFAVChannelLayout.hpp"
 #include "type/FFAVCodecContext.hpp"
-#include "type/impl/ffavimpl.hpp"
 
 namespace ff {
 
@@ -58,6 +60,7 @@ namespace ff {
 
         int streamIndex;
 
+        FFAVCodecParametersPtr codecParameters;
         FFAVStreamImplPtr streamImpl;
         FFAVCodecContextPtr codecContext;
     };

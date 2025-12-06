@@ -29,7 +29,7 @@ TEST(TRANSCODE, DASH_TEST_H264_H265) {
 
 void transcode_test(const std::string& outputFileName, ff::HW_VIDEO_CODEC hwVideoCodec, ff::VIDEO_CODEC videoCodec) {
     ff::FFAVInputContext inputContext;
-    ff::AVError error = inputContext.open("sample.mp4", true);  // GPU Decode
+    ff::AVError error = inputContext.open("sample.mp4", ff::FFAVCodecContextFactory::createHWFormat(ff::ENCODE_HW_TYPE::CUDA));  // GPU Decode
     ASSERT_EQ(error.getType(), ff::AV_ERROR_TYPE::SUCCESS);
 
     auto videoStreams = inputContext.getVideoDecodeStreamList();

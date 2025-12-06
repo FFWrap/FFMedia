@@ -1,30 +1,27 @@
 set(SOURCES
         FFAVRational.cpp
-        
         FFAVPacket.cpp
-        impl/FFAVPacketImpl.cpp
-
         FFAVInputContext.cpp
         FFAVOutputContext.cpp
-        impl/FFAVFormatContextImpl.cpp
-
         FFAVCodecParameters.cpp
-        impl/FFAVCodecParametersImpl.cpp
-
         FFAVFrame.cpp
-        impl/FFAVFrameImpl.cpp
-
-        impl/FFAVStreamImpl.cpp
         FFAVDecodeStream.cpp
         FFAVEncodeStream.cpp
-
         FFAVChannelLayout.cpp
-        impl/FFAVChannelLayoutImpl.cpp
-
         FFAVCodecContext.cpp
-        impl/FFAVCodecContextImpl.cpp
-
         FFAVSwsContext.cpp
+        FFAVCodecContextHWFormat.cpp
+        FFAVCodecContextHWCpu.cpp
+        FFAVCodecContextHWCuda.cpp
+        FFAVCodecContextFactory.cpp
+
+        impl/FFAVPacketImpl.cpp
+        impl/FFAVFormatContextImpl.cpp
+        impl/FFAVCodecParametersImpl.cpp
+        impl/FFAVFrameImpl.cpp
+        impl/FFAVStreamImpl.cpp
+        impl/FFAVChannelLayoutImpl.cpp
+        impl/FFAVCodecContextImpl.cpp
         impl/FFAVSwsContextImpl.cpp
 )
 

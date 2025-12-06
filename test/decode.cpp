@@ -3,7 +3,7 @@
 
 TEST(READ_TEST, AV_PACKET_READ_ITERATOR) {
     ff::FFAVInputContext inputContext;
-    ff::AVError error = inputContext.open("sample.mp4", true);
+    ff::AVError error = inputContext.open("sample.mp4", ff::FFAVCodecContextFactory::createHWFormat(ff::ENCODE_HW_TYPE::CUDA));
     ASSERT_EQ(error.getType(), ff::AV_ERROR_TYPE::SUCCESS);
 
     auto videoStreams = inputContext.getVideoDecodeStreamList();
@@ -40,7 +40,7 @@ TEST(READ_TEST, AV_PACKET_READ_ITERATOR) {
 
 TEST(READ_TEST, AV_PACKET_READ) {
     ff::FFAVInputContext inputContext;
-    ff::AVError error = inputContext.open("sample.mp4", true);
+    ff::AVError error = inputContext.open("sample.mp4", ff::FFAVCodecContextFactory::createHWFormat(ff::ENCODE_HW_TYPE::CUDA));
     ASSERT_EQ(error.getType(), ff::AV_ERROR_TYPE::SUCCESS);
 
     auto videoStreams = inputContext.getVideoDecodeStreamList();

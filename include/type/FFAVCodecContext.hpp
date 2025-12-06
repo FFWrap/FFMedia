@@ -1,12 +1,15 @@
 #pragma once
 
+#include "type/impl/ffavimpl.hpp"
+#include "error/ffav.hpp"
+
 #include <memory>
 #include <vector>
 
-#include "error/ffav.hpp"
-#include "type/impl/ffavimpl.hpp"
-
 namespace ff {
+    class FFAVCodecContextHWFormat;
+    using FFAVCodecContextHWFormatPtr = std::shared_ptr<FFAVCodecContextHWFormat>;
+
     class FFAVCodecContext;
     typedef std::shared_ptr<FFAVCodecContext> FFAVCodecContextPtr;
 
@@ -19,26 +22,28 @@ namespace ff {
         static FFAVCodecContextPtr create();
 
     public:
-        bool findCudaFormat();
-
         AVError openCodec();
 
     public:  // get set
         FFAVCodecContextImplPtr getImpl();
 
-        int getCudaFormat();
-        void setCudaFormat(int cudaFormat);
-
-        std::string getCodecName();
+        void setPixFmt(int format);
         void setCodecName(const std::string& codecName);
-
-        bool isCodecOpen();
-        bool isCudaFormat();
-
+        void setHWFormat(FFAVCodecContextHWFormatPtr hwFormat);
         AVError setOpt(const std::string& key, const std::string& value);
 
+        std::string getCodecName();
+        int getPixFmt();
+        FFAVCodecContextHWFormatPtr getHWFormat();
+
+        bool findHWFormat();
+
+        bool isHWCodec();
+        bool isCodecOpen();
+
     private:
-        int cudaFormat;
+        int pixFmt; // ffmpeg pix_fmt
+        FFAVCodecContextHWFormatPtr hwFormat;
 
         bool isCodecOpenFlag;
         std::string codecName;

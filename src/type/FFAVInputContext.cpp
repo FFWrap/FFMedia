@@ -6,8 +6,9 @@
 #include "type/impl/FFAVFormatContextImpl.hpp"
 #include "type/impl/FFAVPacketImpl.hpp"
 #include "type/impl/FFAVStreamImpl.hpp"
-#include "utils/createDecodeContext.hpp"
+#include "utils/FFAVDecodeCodecContext.hpp"
 #include "error/AVDemuxException.hpp"
+#include "type/FFAVCodecContextFactory.hpp"
 
 extern "C" {
 #include "libavformat/avformat.h"
@@ -29,8 +30,12 @@ namespace ff {
         return this->formatContextImpl;
     }
 
-    AVError FFAVInputContext::open(const std::string& url, bool cudaDecode) {
+    AVError FFAVInputContext::open(const std::string& url, FFAVCodecContextHWFormatPtr hwFormat) {
         this->close();
+
+        if (hwFormat == nullptr) {
+            hwFormat = FFAVCodecContextFactory::createHWFormat(ENCODE_HW_TYPE::CPU);
+		}
 
         // AVFormatContext alloc
         AVFormatContext* avFormatContext = avformat_alloc_context();
@@ -54,7 +59,7 @@ namespace ff {
         }
 
         this->formatContextImpl->setRaw(avFormatContext);
-        this->parseStreamInfo(cudaDecode);
+        this->parseStreamInfo(hwFormat);
 
         return AVError(AV_ERROR_TYPE::SUCCESS);
     }
@@ -85,9 +90,9 @@ namespace ff {
         AVFormatContext* formatContext = this->formatContextImpl->getRaw();
         AVPacket* avPacket = packet->getImpl()->getRaw().get();
 
-        // AVFormatContext ¿¡¼­ AVPacketÀ» ÀÐ¾î¿È.
+        // AVFormatContext ï¿½ï¿½ï¿½ï¿½ AVPacketï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½.
         int ret = av_read_frame(formatContext, avPacket);
-        // retÀÌ eof ÀÏ°æ¿ì null packetÀ» ¹ÝÈ¯
+        // retï¿½ï¿½ eof ï¿½Ï°ï¿½ï¿½ null packetï¿½ï¿½ ï¿½ï¿½È¯
         if (ret == AVERROR_EOF) {
             packet->getImpl()->getRaw() = nullptr;
             return AVError(AV_ERROR_TYPE::AV_EOF);
@@ -134,7 +139,7 @@ namespace ff {
         return FFAVInputContextIterator();
     }
 
-    AVError FFAVInputContext::parseStreamInfo(bool cudaDecode) {
+    AVError FFAVInputContext::parseStreamInfo(FFAVCodecContextHWFormatPtr hwFormat) {
         this->decodeStreamList = std::make_shared<FFAVDecodeStreamList>();
 
         AVFormatContext* avFormatContext = this->formatContextImpl->getRaw();
@@ -142,41 +147,15 @@ namespace ff {
         AVError error;
         int streamIndex = 0;
         for (int i = 0; i < avFormatContext->nb_streams; i++) {
-            AVStream* avStream = avFormatContext->streams[i];
-
             FFAVDecodeStreamPtr decodeStream = FFAVDecodeStream::create(DATA_TYPE::UNKNOWN);
-            decodeStream->getImpl()->setRaw(avStream);
+
+            decodeStream->getImpl()->setRaw(avFormatContext->streams[i]);
             decodeStream->setStreamIndex(streamIndex++);
 
-            auto codecType = avStream->codecpar->codec_type;
-            if (codecType == AVMEDIA_TYPE_VIDEO) {  // Video
-                decodeStream->setType(DATA_TYPE::VIDEO);
-            } else if (codecType == AVMEDIA_TYPE_AUDIO) {  // Audio
-                decodeStream->setType(DATA_TYPE::AUDIO);
-            } else {  // Other
-                decodeStream->setType(DATA_TYPE::UNKNOWN);
-            }
+            auto codecType = decodeStream->getImpl()->getRaw()->codecpar->codec_type;
+            decodeStream->setType(DATA_TYPE_FROM_AV_CODEC_TYPE(codecType));
 
-            // Decode context create
-            if (codecType == AVMEDIA_TYPE_VIDEO) {  // Video
-                FFAVCodecContextPtr decodeContext;
-                if (cudaDecode) {
-                    decodeContext = video::decode::createCUDACodecContext(decodeStream, &error);
-                } else {
-                    decodeContext = video::decode::createCodecContext(decodeStream, &error);
-                }
-
-                if (error.getType() != AV_ERROR_TYPE::SUCCESS) {
-                    return error;
-                }
-                decodeStream->setCodecContext(decodeContext);
-            } else if (codecType == AVMEDIA_TYPE_AUDIO) {  // Audio
-                FFAVCodecContextPtr decodeContext = audio::decode::createCodecContext(decodeStream, &error);
-                if (error.getType() != AV_ERROR_TYPE::SUCCESS) {
-                    return error;
-                }
-                decodeStream->setCodecContext(decodeContext);
-            }
+            decodeStream->setCodecContext(FFAVCodecContextFactory::createContext(decodeStream, hwFormat));
 
             this->decodeStreamList->emplace_back(decodeStream);
         }
@@ -188,9 +167,9 @@ namespace ff {
     FFAVInputContextIterator::FFAVInputContextIterator(FFAVInputContext* context) : context(context) {
         this->eofFlag = false;
         if (this->context && this->context->isOpened()) {
-            // ÃÊ±â ÆÐÅ¶ ÀÐ±â ½Ãµµ
+            // ï¿½Ê±ï¿½ ï¿½ï¿½Å¶ ï¿½Ð±ï¿½ ï¿½Ãµï¿½
             if (this->context->demux(&this->currentPacket).getType() != AV_ERROR_TYPE::SUCCESS) {
-                // ½ÇÆÐÇÑ °æ¿ì, context¸¦ nullptr·Î ¼³Á¤ÇÏ¿© ¹Ýº¹ÀÚÀÇ ³¡À» ³ªÅ¸³¿
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, contextï¿½ï¿½ nullptrï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½
                 this->context = nullptr;
             }
         } else {
@@ -213,11 +192,11 @@ namespace ff {
                 if (eofFlag == false) {
                     eofFlag = true;
                 } else {
-                    // ´õ ÀÌ»ó ÆÐÅ¶À» ÀÐÀ» ¼ö ¾øÀ¸¸é ¹Ýº¹ÀÚ¸¦ ³¡À¸·Î ¼³Á¤
+                    // ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½Å¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ýºï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                     this->context = nullptr;
                 }
             } else if (error.getType() != AV_ERROR_TYPE::SUCCESS) {
-                // ´ÙÀ½ ÆÐÅ¶À» ÀÐ´Â µ¥ ½ÇÆÐÇÏ¸é ¹Ýº¹ÀÚ¸¦ ³¡À¸·Î ¼³Á¤
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ï¿½ï¿½ ï¿½Ð´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½Ýºï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 throw AVDemuxException(error);
             }
         }

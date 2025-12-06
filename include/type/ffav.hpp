@@ -14,4 +14,8 @@
 #include "type/FFAVRational.hpp"
 #include "type/FFAVStream.hpp"
 #include "type/FFAVSwsContext.hpp"
+#include "type/FFAVCodecContextHWFormat.hpp"
+#include "type/FFAVCodecContextHWCpu.hpp"
+#include "type/FFAVCodecContextHWCuda.hpp"
+#include "type/FFAVCodecContextFactory.hpp"
 #include "type/impl/ffavimpl.hpp"

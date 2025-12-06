@@ -26,6 +26,7 @@ edsr_x3_cuda.ts
 edsr_x4_cuda.ts
 out
 cmake-build-debug-visual-studio
+cmake-build-release-visual-studio
 
 # windows library
 thirdparty/windows/ffmpeg/include

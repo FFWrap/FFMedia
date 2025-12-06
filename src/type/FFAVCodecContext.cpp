@@ -1,7 +1,8 @@
 #include "type/FFAVCodecContext.hpp"
+#include "type/FFAVCodecContextHWFormat.hpp"
+#include "type/impl/FFAVCodecContextImpl.hpp"
 
 #include "error/ffav.hpp"
-#include "type/impl/FFAVCodecContextImpl.hpp"
 
 extern "C" {
 #include "libavutil/opt.h"
@@ -15,8 +16,6 @@ namespace ff {
     FFAVCodecContext::FFAVCodecContext() {
         this->codecContextImpl = FFAVCodecContextImpl::create();
 
-        this->cudaFormat = -1;
-
         this->isCodecOpenFlag = false;
     }
 
@@ -26,8 +25,20 @@ namespace ff {
         return this->codecContextImpl;
     }
 
-    void FFAVCodecContext::setCudaFormat(int cudaFormat) {
-        this->cudaFormat = cudaFormat;
+    void FFAVCodecContext::setPixFmt(int pixFmt) {
+        this->pixFmt = pixFmt;
+    }
+
+    int FFAVCodecContext::getPixFmt() {
+        return this->pixFmt;
+    }
+
+    FFAVCodecContextHWFormatPtr FFAVCodecContext::getHWFormat() {
+        return this->hwFormat;
+    }
+
+    bool FFAVCodecContext::findHWFormat() {
+        return this->hwFormat->findHWFormat(*this);
     }
 
     std::string FFAVCodecContext::getCodecName() {
@@ -38,12 +49,15 @@ namespace ff {
         this->codecName = codecName;
     }
 
-    int FFAVCodecContext::getCudaFormat() {
-        return this->cudaFormat;
+    void FFAVCodecContext::setHWFormat(FFAVCodecContextHWFormatPtr hwFormat) {
+        this->hwFormat = hwFormat;
     }
 
-    bool FFAVCodecContext::isCudaFormat() {
-        return this->cudaFormat != -1;
+    bool FFAVCodecContext::isHWCodec() {
+        if (this->hwFormat->getEncodeHWType() == ENCODE_HW_TYPE::CPU) {
+            return false;
+        }
+        return true;
     }
 
     bool FFAVCodecContext::isCodecOpen() {
@@ -58,23 +72,6 @@ namespace ff {
         }
 
         return AVError(AV_ERROR_TYPE::SUCCESS);
-    }
-
-    bool FFAVCodecContext::findCudaFormat() {
-        if (this->codecContextImpl->getRaw() == nullptr) {
-            return false;
-        }
-
-        AVCodecContext* codecContext = this->codecContextImpl->getRaw();
-        const AVCodecHWConfig* codecHwConfig = nullptr;
-        for (int i = 0; (codecHwConfig = avcodec_get_hw_config(codecContext->codec, i)); i++) {
-            if (codecHwConfig->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX &&
-                codecHwConfig->device_type == AV_HWDEVICE_TYPE_CUDA) {
-                this->cudaFormat = (int)codecHwConfig->pix_fmt;
-                return true;
-            }
-        }
-        return false;
     }
 
     AVError FFAVCodecContext::openCodec() {
